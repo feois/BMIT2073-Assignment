@@ -1,0 +1,50 @@
+
+import 'dart:collection';
+
+import 'package:assignment/classes/delivery.dart';
+import 'package:assignment/classes/part.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+typedef Json = Map<String, dynamic>;
+
+class Database {
+  static late final SupabaseClient supabase;
+  static const partTable = 'parts';
+  static const deliveryTable = 'deliveries';
+
+  static List<Part> _parts = [];
+  static Map<int, Part> _partsMap = {};
+  static List<Delivery> _deliveries = [];
+  static Map<int, Delivery> _deliveriesMap = {};
+
+  static UnmodifiableListView<Part> get parts => UnmodifiableListView(_parts);
+  static UnmodifiableMapView<int, Part> get partsMap => UnmodifiableMapView(_partsMap);
+  static UnmodifiableListView<Delivery> get deliveries => UnmodifiableListView(_deliveries);
+  static UnmodifiableMapView<int, Delivery> get deliveriesMap => UnmodifiableMapView(_deliveriesMap);
+
+  static Future<void> init(String url, String key) async {
+    await Supabase.initialize(url: url, anonKey: key);
+    supabase = Supabase.instance.client;
+  }
+
+  static Future<List<Part>> fetchParts() async =>
+      (await supabase.from(partTable).select()).map(Part.fromJson).toList();
+  
+  static Future<List<Delivery>> fetchDeliveries() async =>
+      (await supabase.from(deliveryTable).select()).map(Delivery.fromJson).toList();
+
+  static Future<void> fetch() async {
+    _parts = await fetchParts();
+    _deliveries = await fetchDeliveries();
+    _partsMap.clear();
+    _deliveriesMap.clear();
+
+    for (final part in _parts) {
+      _partsMap[part.id] = part;
+    }
+
+    for (final delivery in _deliveries) {
+      _deliveriesMap[delivery.id] = delivery;
+    }
+  }
+}
