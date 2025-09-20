@@ -9,7 +9,7 @@ part of 'delivery.dart';
 Delivery _$DeliveryFromJson(Map<String, dynamic> json) =>
     Delivery(
         id: (json['id'] as num).toInt(),
-        part: (json['part'] as num).toInt(),
+        partId: (json['part'] as num).toInt(),
         quantity: (json['quantity'] as num).toInt(),
         destination: json['destination'] as String,
         orderDate: DateTime.parse(json['order_date'] as String),
@@ -23,7 +23,7 @@ Delivery _$DeliveryFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$DeliveryToJson(Delivery instance) => <String, dynamic>{
   'id': instance.id,
-  'part': instance.part,
+  'part': instance.partId,
   'quantity': instance.quantity,
   'destination': instance.destination,
   'order_date': instance.orderDate.toIso8601String(),
@@ -34,12 +34,12 @@ Map<String, dynamic> _$DeliveryToJson(Delivery instance) => <String, dynamic>{
 };
 
 const _$DeliveryPriorityEnumMap = {
-  DeliveryPriority.normal: 'normal',
-  DeliveryPriority.urgent: 'urgent',
+  DeliveryPriority.normal: 'Normal',
+  DeliveryPriority.urgent: 'Urgent',
 };
 
 const _$DeliveryStatusEnumMap = {
-  DeliveryStatus.pickedUp: 'picked_up',
-  DeliveryStatus.enRoute: 'en_route',
-  DeliveryStatus.delivered: 'delivered',
+  DeliveryStatus.pickedUp: 'Picked Up',
+  DeliveryStatus.enRoute: 'En Route',
+  DeliveryStatus.delivered: 'Delivered',
 };

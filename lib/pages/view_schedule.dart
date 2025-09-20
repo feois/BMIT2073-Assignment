@@ -1,7 +1,8 @@
 
 import 'package:assignment/classes/delivery.dart';
 import 'package:assignment/database.dart';
-import 'package:assignment/providers/time_provider.dart';
+import 'package:assignment/pages/view_delivery.dart';
+import 'package:assignment/utils.dart';
 import 'package:flutter/material.dart';
 
 class ViewSchedule extends StatefulWidget {
@@ -31,8 +32,6 @@ class _ViewScheduleState extends State<ViewSchedule> {
   }
   
   Widget _deliveryView(Delivery delivery) {
-    final part = Database.partsMap[delivery.part]!;
-
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         padding: EdgeInsets.all(8),
@@ -42,23 +41,33 @@ class _ViewScheduleState extends State<ViewSchedule> {
       ),
       child: Align(
         alignment: AlignmentGeometry.centerLeft,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
+          spacing: 16,
           children: [
-            Text('${part.name} (x${delivery.quantity})'),
-            Text(part.description),
-            Text('-> ${delivery.destination} by ${dateFormat.format(delivery.requiredDate)}'),
+            Image.network(
+              'https://sxnngstlymxxxlfyimno.supabase.co/storage/v1/object/public/images/cube.png',
+              width: 64,
+              height: 64,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('${delivery.part.name} (×${delivery.quantity})'),
+                Text(delivery.part.description),
+                Text('→ ${delivery.destination} by ${dateFormat.format(delivery.requiredDate)}'),
+              ],
+            ),
           ],
         ),
       ),
-      onPressed: () {},
+      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ViewDelivery(delivery: delivery))),
     );
   }
 
   Widget _deliveryListView() {
     // ignore: prefer_function_declarations_over_variables
     Comparator<Delivery> comparator = (a, b) => switch (_sort) {
-      _SortBy.name => a.id.compareTo(b.id),
+      _SortBy.name => a.part.name.compareTo(b.part.name),
       _SortBy.date => a.quantity.compareTo(b.quantity),
       _SortBy.priority => a.priority.index.compareTo(b.priority.index),
     };
@@ -101,10 +110,7 @@ class _ViewScheduleState extends State<ViewSchedule> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: () => Navigator.pop(context),
-      ),
+      leading: backButton(context),
       title: TextField(
         decoration: const InputDecoration(
           hintText: "Search part",

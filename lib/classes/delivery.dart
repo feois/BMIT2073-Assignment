@@ -1,26 +1,42 @@
 
+import 'package:assignment/classes/part.dart';
 import 'package:assignment/database.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'delivery.g.dart';
 
-@JsonEnum(fieldRename: FieldRename.snake)
+@JsonEnum()
 enum DeliveryPriority {
+  @JsonValue("Normal")
   normal,
+  @JsonValue("Urgent")
   urgent,
+  ;
+
+  @override
+  String toString() => _$DeliveryPriorityEnumMap[this]!;
 }
 
-@JsonEnum(fieldRename: FieldRename.snake)
+@JsonEnum()
 enum DeliveryStatus {
+  @JsonValue("Picked Up")
   pickedUp,
+  @JsonValue("En Route")
   enRoute,
+  @JsonValue("Delivered")
   delivered,
+  ;
+
+  @override
+  String toString() => _$DeliveryStatusEnumMap[this]!;
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class Delivery {
   final int id;
-  int part;
+  @JsonKey(name: "part")
+  int partId;
   int quantity;
   String destination;
   DateTime orderDate;
@@ -29,9 +45,11 @@ class Delivery {
   DeliveryStatus status = DeliveryStatus.pickedUp;
   DateTime? deliveredDate;
 
+  Part get part => Database.partsMap[partId]!;
+
   Delivery({
     required this.id,
-    required this.part,
+    required this.partId,
     required this.quantity,
     required this.destination,
     required this.orderDate,
