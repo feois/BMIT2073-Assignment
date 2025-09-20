@@ -19,7 +19,8 @@ Delivery _$DeliveryFromJson(Map<String, dynamic> json) =>
       ..status = $enumDecode(_$DeliveryStatusEnumMap, json['status'])
       ..deliveredDate = json['delivered_date'] == null
           ? null
-          : DateTime.parse(json['delivered_date'] as String);
+          : DateTime.parse(json['delivered_date'] as String)
+      ..deliveryProof = json['delivery_proof'] as String?;
 
 Map<String, dynamic> _$DeliveryToJson(Delivery instance) => <String, dynamic>{
   'id': instance.id,
@@ -31,6 +32,7 @@ Map<String, dynamic> _$DeliveryToJson(Delivery instance) => <String, dynamic>{
   'priority': _$DeliveryPriorityEnumMap[instance.priority]!,
   'status': _$DeliveryStatusEnumMap[instance.status]!,
   'delivered_date': instance.deliveredDate?.toIso8601String(),
+  'delivery_proof': instance.deliveryProof,
 };
 
 const _$DeliveryPriorityEnumMap = {

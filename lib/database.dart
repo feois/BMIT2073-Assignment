@@ -1,5 +1,6 @@
 
 import 'dart:collection';
+import 'dart:io';
 
 import 'package:assignment/classes/delivery.dart';
 import 'package:assignment/classes/part.dart';
@@ -11,6 +12,7 @@ class Database {
   static late final SupabaseClient supabase;
   static const partTable = 'parts';
   static const deliveryTable = 'deliveries';
+  static const imagesBucket = 'images';
 
   static List<Part> _parts = [];
   static Map<int, Part> _partsMap = {};
@@ -46,5 +48,11 @@ class Database {
     for (final delivery in _deliveries) {
       _deliveriesMap[delivery.id] = delivery;
     }
+  }
+
+  static Future<String> uploadImage(String path, File image, {bool overwrite = false}) async {
+    final bucket = supabase.storage.from(imagesBucket);
+    await bucket.upload(path, image, fileOptions: FileOptions(upsert: overwrite));
+    return bucket.getPublicUrl(path);
   }
 }

@@ -2,7 +2,6 @@
 import 'package:assignment/classes/part.dart';
 import 'package:assignment/database.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'delivery.g.dart';
 
@@ -44,6 +43,7 @@ class Delivery {
   DeliveryPriority priority;
   DeliveryStatus status = DeliveryStatus.pickedUp;
   DateTime? deliveredDate;
+  String? deliveryProof;
 
   Part get part => Database.partsMap[partId]!;
 
@@ -56,6 +56,12 @@ class Delivery {
     required this.requiredDate,
     required this.priority,
   });
+
+  void deliver(DateTime date, String proof) {
+    status = DeliveryStatus.delivered;
+    deliveredDate = date;
+    deliveryProof = proof;
+  }
   
   factory Delivery.fromJson(Json json) => _$DeliveryFromJson(json);
 
