@@ -1,5 +1,6 @@
 
 import 'package:assignment/classes/delivery.dart';
+import 'package:assignment/classes/part.dart';
 import 'package:assignment/database.dart';
 import 'package:assignment/utils.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,12 @@ class _AddDeliveryState extends State<AddDelivery> {
     _dateCtrl.dispose();
   }
 
+  @override
+  void initState() {
+    super.initState();
+    Database.fetch();
+  }
+
   Future<void> _submit() async {
     final delivery = Delivery(
       id: 0,
@@ -50,6 +57,16 @@ class _AddDeliveryState extends State<AddDelivery> {
     Navigator.pop(context);
   }
 
+  bool _match(String target, String query) => target.toLowerCase().contains(query.toLowerCase());
+
+  Iterable<Part> _search(String query) {
+    final id = int.tryParse(query);
+    
+    return Database.parts.where(
+      (part) => (id != null ? _match(part.id.toString(), id.toString()) : false) || _match(part.name, query)
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
     resizeToAvoidBottomInset: true,
@@ -63,21 +80,43 @@ class _AddDeliveryState extends State<AddDelivery> {
           child: Column(
             spacing: 32,
             children: [
-              TextFormField(
-                initialValue: '',
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                decoration: const InputDecoration(
-                  icon: Icon(Icons.settings),
-                  labelText: 'Part ID',
+              Autocomplete<int>(
+                optionsBuilder: (text) => text.text.isEmpty ? const Iterable.empty() : _search(text.text).map((part) => part.id),
+                displayStringForOption: (part) => part.toString(),
+                fieldViewBuilder: (_, ctrl, focus, submit) => TextFormField(
+                  controller: ctrl,
+                  focusNode: focus,
+                  decoration: const InputDecoration(
+                    icon: Icon(Icons.settings),
+                    labelText: 'Part ID',
+                  ),
+                  onFieldSubmitted: (_) => submit(),
+                  onSaved: (part) => _part = int.parse(part!),
+                  validator: (part) => validateInt(
+                    part!,
+                        (part) => Database.partsMap.containsKey(part),
+                    empty: 'Part ID required!',
+                    nan: 'Only integers allowed!',
+                    invalidated: 'Part ID not found!',
+                  ),
                 ),
-                onSaved: (part) => _part = int.parse(part!),
-                validator: (part) => validateInt(
-                  part!,
-                  (part) => Database.partsMap.containsKey(part),
-                  empty: 'Part ID required!',
-                  nan: 'Only integers allowed!',
-                  invalidated: 'Part ID not found!',
+                optionsViewBuilder: (_, select, options) => Align(
+                  alignment: AlignmentGeometry.topLeft,
+                  child: Material(
+                    elevation: 4,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 200),
+                      child: ListView(
+                        shrinkWrap: true,
+                        children: options.map((option) => Database.partsMap[option]!).map((part) => ListTile(
+                          leading: Image.network(part.image, width: 32, height: 32),
+                          title: Text(part.name),
+                          subtitle: Text(part.id.toString()),
+                          onTap: () => select(part.id),
+                        )).toList(),
+                      ),
+                    ),
+                  ),
                 ),
               ),
               TextFormField(
