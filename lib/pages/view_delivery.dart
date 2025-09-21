@@ -46,19 +46,39 @@ class _ViewDeliveryState extends State<ViewDelivery> {
     setState(() => _updating = false);
   }
 
+  Future<void> Function() _updateStatus(DeliveryStatus status) => () async {
+    setState(() => _updating = true);
+
+    delivery.status = status;
+    await Database.supabase.from(Database.deliveryTable).update(delivery.toJson()).eq('id', delivery.id);
+    snack(this, 'Status updated successfully');
+
+    setState(() => _updating = false);
+  };
+
   Widget _action() {
     if (_updating) {
       return const CircularProgressIndicator();
     }
-
-    if (delivery.status == DeliveryStatus.delivered) {
-      return ElevatedButton(
+    
+    return switch (delivery.status) {
+      DeliveryStatus.pending => ElevatedButton(
+        onPressed: _updateStatus(DeliveryStatus.pickedUp),
+        child: const Text('Pick up'),
+      ),
+      DeliveryStatus.pickedUp => ElevatedButton(
+        onPressed: _updateStatus(DeliveryStatus.enRoute),
+        child: const Text('Dispatch'),
+      ),
+      DeliveryStatus.enRoute => ElevatedButton(
+        onPressed: _confirmDelivery,
+        child: const Text('Confirm delivery'),
+      ),
+      DeliveryStatus.delivered => ElevatedButton(
         onPressed: navigate(context, () => ViewProof(delivery: delivery)),
         child: const Text('View delivery proof'),
-      );
-    }
-
-    return ElevatedButton(onPressed: _confirmDelivery, child: const Text('Confirm delivery'));
+      ),
+    };
   }
 
   @override
@@ -80,13 +100,13 @@ class _ViewDeliveryState extends State<ViewDelivery> {
                   width: 128,
                   height: 128,
                 ),
-                Text(delivery.part.name, style: Theme.of(context).textTheme.titleLarge),
+                Expanded(child: Text(delivery.part.name, style: Theme.of(context).textTheme.titleLarge)),
               ],
             ),
             const SizedBox(height: 16),
-            Text(delivery.part.description),
-            Text('Quantity: ${delivery.quantity}'),
-            Text('Destination: ${delivery.destination}'),
+            Expanded(child: Text(delivery.part.description)),
+            Expanded(child: Text('Quantity: ${delivery.quantity}')),
+            Expanded(child: Text('Destination: ${delivery.destination}')),
             Text('Ordered On: ${dateFormat.format(delivery.orderDate)}'),
             Text('Required by: ${dateFormat.format(delivery.requiredDate)}'),
             Text('Priority: ${delivery.priority}'),

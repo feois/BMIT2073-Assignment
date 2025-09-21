@@ -87,6 +87,7 @@ class _ViewScheduleState extends State<ViewSchedule> {
                   children: [
                     Icon(
                       switch (delivery.status) {
+                        DeliveryStatus.pending => Icons.schedule,
                         DeliveryStatus.pickedUp => Icons.inventory,
                         DeliveryStatus.enRoute => Icons.local_shipping,
                         DeliveryStatus.delivered => Icons.check,

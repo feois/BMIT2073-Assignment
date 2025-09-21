@@ -24,6 +24,8 @@ enum DeliveryPriority {
 
 @JsonEnum()
 enum DeliveryStatus {
+  @JsonValue("Pending")
+  pending,
   @JsonValue("Picked Up")
   pickedUp,
   @JsonValue("En Route")
@@ -46,7 +48,7 @@ class Delivery {
   DateTime orderDate;
   DateTime requiredDate;
   DeliveryPriority priority;
-  DeliveryStatus status = DeliveryStatus.pickedUp;
+  DeliveryStatus status = DeliveryStatus.pending;
   DateTime? deliveredDate;
   String? deliveryProof;
 
