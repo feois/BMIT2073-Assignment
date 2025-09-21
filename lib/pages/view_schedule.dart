@@ -31,38 +31,36 @@ class _ViewScheduleState extends State<ViewSchedule> {
     setState(() => _loading = false);
   }
   
-  Widget _deliveryView(Delivery delivery) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.all(8),
-        minimumSize: Size(double.infinity, 0),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        foregroundColor: Colors.black,
+  Widget _deliveryView(Delivery delivery) => ElevatedButton(
+    style: ElevatedButton.styleFrom(
+      padding: EdgeInsets.all(8),
+      minimumSize: Size(double.infinity, 0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      foregroundColor: Colors.black,
+    ),
+    onPressed: navigate(context, () => ViewDelivery(delivery: delivery)),
+    child: Align(
+      alignment: AlignmentGeometry.centerLeft,
+      child: Row(
+        spacing: 16,
+        children: [
+          Image.network(
+            delivery.part.image,
+            width: 64,
+            height: 64,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('${delivery.part.name} (×${delivery.quantity})'),
+              Text(delivery.part.description),
+              Text('→ ${delivery.destination} by ${dateFormat.format(delivery.requiredDate)}'),
+            ],
+          ),
+        ],
       ),
-      child: Align(
-        alignment: AlignmentGeometry.centerLeft,
-        child: Row(
-          spacing: 16,
-          children: [
-            Image.network(
-              'https://sxnngstlymxxxlfyimno.supabase.co/storage/v1/object/public/images/cube.png',
-              width: 64,
-              height: 64,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('${delivery.part.name} (×${delivery.quantity})'),
-                Text(delivery.part.description),
-                Text('→ ${delivery.destination} by ${dateFormat.format(delivery.requiredDate)}'),
-              ],
-            ),
-          ],
-        ),
-      ),
-      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ViewDelivery(delivery: delivery))),
-    );
-  }
+    ),
+  );
 
   Widget _deliveryListView() {
     // ignore: prefer_function_declarations_over_variables
@@ -110,7 +108,6 @@ class _ViewScheduleState extends State<ViewSchedule> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      leading: backButton(context),
       title: TextField(
         decoration: const InputDecoration(
           hintText: "Search part",

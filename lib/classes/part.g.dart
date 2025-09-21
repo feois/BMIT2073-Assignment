@@ -11,6 +11,7 @@ Part _$PartFromJson(Map<String, dynamic> json) => Part(
   name: json['name'] as String,
   description: json['description'] as String,
   price: (json['price'] as num).toDouble(),
+  image: json['image'] as String,
 );
 
 Map<String, dynamic> _$PartToJson(Part instance) => <String, dynamic>{
@@ -18,4 +19,5 @@ Map<String, dynamic> _$PartToJson(Part instance) => <String, dynamic>{
   'name': instance.name,
   'description': instance.description,
   'price': instance.price,
+  'image': instance.image,
 };

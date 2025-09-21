@@ -10,10 +10,7 @@ class ViewProof extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      leading: backButton(context),
-      title: Text('Delivery Proof - ${delivery.id}'),
-    ),
+    appBar: AppBar(title: Text('Delivery Proof - ${delivery.id}')),
     body: Padding(
       padding: const EdgeInsets.all(16),
       child: Image.network(delivery.deliveryProof!),

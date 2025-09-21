@@ -10,15 +10,9 @@ class Part {
   String name;
   String description;
   double price;
+  String image;
 
-  Part({required this.id, required this.name, required this.description, required this.price});
-
-  factory Part.fromDb(Json object) => Part(
-    id: object['id'] as int,
-    name: object['name'] as String,
-    description: object['description'] as String,
-    price: object['price'] as double,
-  );
+  Part({required this.id, required this.name, required this.description, required this.price, required this.image});
 
   factory Part.fromJson(Json json) => _$PartFromJson(json);
 

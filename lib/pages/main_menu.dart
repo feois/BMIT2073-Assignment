@@ -1,3 +1,4 @@
+import 'package:assignment/pages/add_delivery.dart';
 import 'package:assignment/pages/view_schedule.dart';
 import 'package:assignment/providers/time_provider.dart';
 import 'package:assignment/utils.dart';
@@ -20,10 +21,13 @@ class MainMenu extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           ElevatedButton(
+            onPressed: navigate(context, () => const ViewSchedule()),
             child: const Text("View schedule"),
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ViewSchedule())),
           ),
-          ElevatedButton(onPressed: () => {}, child: const Text("Add new delivery")),
+          ElevatedButton(
+            onPressed: navigate(context, () => const AddDelivery()),
+            child: const Text("Add new delivery"),
+          ),
           Consumer<TimeProvider>(builder: (_, timeProvider, _) => Text(timeFormat.format(timeProvider.time))),
         ],
       ),

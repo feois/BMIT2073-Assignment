@@ -15,9 +15,9 @@ class Database {
   static const imagesBucket = 'images';
 
   static List<Part> _parts = [];
-  static Map<int, Part> _partsMap = {};
+  static final Map<int, Part> _partsMap = {};
   static List<Delivery> _deliveries = [];
-  static Map<int, Delivery> _deliveriesMap = {};
+  static final Map<int, Delivery> _deliveriesMap = {};
 
   static UnmodifiableListView<Part> get parts => UnmodifiableListView(_parts);
   static UnmodifiableMapView<int, Part> get partsMap => UnmodifiableMapView(_partsMap);
@@ -50,9 +50,9 @@ class Database {
     }
   }
 
-  static Future<String> uploadImage(String path, File image, {bool overwrite = false}) async {
+  static Future<String> uploadFile(String path, File file, {bool overwrite = false}) async {
     final bucket = supabase.storage.from(imagesBucket);
-    await bucket.upload(path, image, fileOptions: FileOptions(upsert: overwrite));
+    await bucket.upload(path, file, fileOptions: FileOptions(upsert: overwrite));
     return bucket.getPublicUrl(path);
   }
 }

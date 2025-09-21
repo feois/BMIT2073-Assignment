@@ -7,7 +7,7 @@ import 'package:assignment/pages/view_proof.dart';
 import 'package:assignment/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' show extension;
 
 class ViewDelivery extends StatefulWidget {
   final Delivery delivery;
@@ -29,29 +29,24 @@ class _ViewDeliveryState extends State<ViewDelivery> {
     _ => delivery.status.toString(),
   };
 
-  void _snack(String text) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
-    }
-  }
-
   Future<void> _confirmDelivery() async {
     setState(() => _updating = true);
 
     final file = await _imagePicker.pickImage(source: ImageSource.camera);
 
     if (file == null) {
-      _snack('Failed to get image, try again.');
-      return;
+      snack(this, 'Failed to get image, try again.');
     }
+    else {
+      final filePath = 'delivery/${delivery.id}${extension(file.path)}';
+      final url = await Database.uploadFile(filePath, File(file.path), overwrite: true);
 
-    final url = await Database.uploadImage('delivery/${delivery.id}${path.extension(file.path)}', File(file.path), overwrite: true);
-    
-    delivery.deliver(DateTime.now(), url);
-    
-    await Database.supabase.from(Database.deliveryTable).update(delivery.toJson()).eq('id', delivery.id);
+      delivery.deliver(DateTime.now(), url);
 
-    _snack('Status updated successfully');
+      await Database.supabase.from(Database.deliveryTable).update(delivery.toJson()).eq('id', delivery.id);
+
+      snack(this, 'Status updated successfully');
+    }
 
     setState(() => _updating = false);
   }
@@ -63,7 +58,7 @@ class _ViewDeliveryState extends State<ViewDelivery> {
 
     if (delivery.status == DeliveryStatus.delivered) {
       return ElevatedButton(
-        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ViewProof(delivery: delivery))),
+        onPressed: navigate(context, () => ViewProof(delivery: delivery)),
         child: const Text('View delivery proof'),
       );
     }
@@ -73,10 +68,7 @@ class _ViewDeliveryState extends State<ViewDelivery> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      leading: backButton(context),
-      title: Text('Delivery Information - ${delivery.id}'),
-    ),
+    appBar: AppBar(title: Text('Delivery Information - ${delivery.id}')),
     body: Padding(
       padding: EdgeInsets.all(32),
       child: DefaultTextStyle(
