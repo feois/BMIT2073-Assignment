@@ -70,7 +70,15 @@ class _ViewScheduleState extends State<ViewSchedule> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(child: Text('${delivery.part.name} (×${delivery.quantity})')),
-                    Text('${delivery.priority}'),
+                    Icon(
+                      Icons.priority_high,
+                      color: switch (delivery.priority) {
+                        DeliveryPriority.unimportant => Colors.grey[800],
+                        DeliveryPriority.normal => Colors.green,
+                        DeliveryPriority.important => Colors.orange,
+                        DeliveryPriority.urgent => Colors.red,
+                      },
+                    ),
                   ],
                 ),
                 const Divider(),
