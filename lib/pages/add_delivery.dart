@@ -54,16 +54,17 @@ class _AddDeliveryState extends State<AddDelivery> {
     await Database.supabase.from(Database.deliveryTable).insert(json);
 
     snack(this, 'Delivery added successfully');
-    Navigator.pop(context);
-  }
 
-  bool _match(String target, String query) => target.toLowerCase().contains(query.toLowerCase());
+    if (mounted) {
+      Navigator.pop(context);
+    }
+  }
 
   Iterable<Part> _search(String query) {
     final id = int.tryParse(query);
     
     return Database.parts.where(
-      (part) => (id != null ? _match(part.id.toString(), id.toString()) : false) || _match(part.name, query)
+      (part) => (id != null ? matchString(part.id.toString(), id.toString()) : false) || matchString(part.name, query)
     );
   }
 
@@ -108,7 +109,7 @@ class _AddDeliveryState extends State<AddDelivery> {
                       constraints: const BoxConstraints(maxHeight: 200),
                       child: ListView(
                         shrinkWrap: true,
-                        children: options.map((option) => Database.partsMap[option]!).map((part) => ListTile(
+                        children: options.map(Part.fromCache).map((part) => ListTile(
                           leading: Image.network(part.image, width: 32, height: 32),
                           title: Text(part.name),
                           subtitle: Text(part.id.toString()),

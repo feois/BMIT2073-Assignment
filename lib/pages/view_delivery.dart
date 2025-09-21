@@ -24,11 +24,6 @@ class _ViewDeliveryState extends State<ViewDelivery> {
 
   Delivery get delivery => widget.delivery;
 
-  String _status() => switch (delivery.status) {
-    DeliveryStatus.delivered => "${delivery.status} on ${dateFormat.format(delivery.deliveredDate!)}",
-    _ => delivery.status.toString(),
-  };
-
   Future<void> _confirmDelivery() async {
     setState(() => _updating = true);
 
@@ -94,7 +89,7 @@ class _ViewDeliveryState extends State<ViewDelivery> {
             Text('Ordered On: ${dateFormat.format(delivery.orderDate)}'),
             Text('Required by: ${dateFormat.format(delivery.requiredDate)}'),
             Text('Priority: ${delivery.priority}'),
-            Text('Status: ${_status()}'),
+            Text('Status: ${delivery.fullStatus}'),
             Center(child: _action()),
           ],
         ),

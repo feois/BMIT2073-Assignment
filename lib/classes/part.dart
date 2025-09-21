@@ -14,6 +14,7 @@ class Part {
 
   Part({required this.id, required this.name, required this.description, required this.price, required this.image});
 
+  factory Part.fromCache(int id) => Database.partsMap[id]!;
   factory Part.fromJson(Json json) => _$PartFromJson(json);
 
   Json toJson() => _$PartToJson(this);

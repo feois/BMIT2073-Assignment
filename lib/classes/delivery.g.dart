@@ -36,7 +36,9 @@ Map<String, dynamic> _$DeliveryToJson(Delivery instance) => <String, dynamic>{
 };
 
 const _$DeliveryPriorityEnumMap = {
+  DeliveryPriority.unimportant: 'Unimportant',
   DeliveryPriority.normal: 'Normal',
+  DeliveryPriority.important: 'Important',
   DeliveryPriority.urgent: 'Urgent',
 };
 

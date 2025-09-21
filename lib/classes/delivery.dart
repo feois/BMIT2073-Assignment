@@ -1,14 +1,19 @@
 
 import 'package:assignment/classes/part.dart';
 import 'package:assignment/database.dart';
+import 'package:assignment/utils.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'delivery.g.dart';
 
 @JsonEnum()
 enum DeliveryPriority {
+  @JsonValue("Unimportant")
+  unimportant,
   @JsonValue("Normal")
   normal,
+  @JsonValue("Important")
+  important,
   @JsonValue("Urgent")
   urgent,
   ;
@@ -45,7 +50,7 @@ class Delivery {
   DateTime? deliveredDate;
   String? deliveryProof;
 
-  Part get part => Database.partsMap[partId]!;
+  Part get part => Part.fromCache(partId);
 
   Delivery({
     required this.id,
@@ -62,7 +67,13 @@ class Delivery {
     deliveredDate = date;
     deliveryProof = proof;
   }
-  
+
+  String get fullStatus => switch (status) {
+    DeliveryStatus.delivered => "${status} on ${dateFormat.format(deliveredDate!)}",
+    _ => status.toString(),
+  };
+
+  factory Delivery.fromCache(int id) => Database.deliveriesMap[id]!;
   factory Delivery.fromJson(Json json) => _$DeliveryFromJson(json);
 
   Json toJson() => _$DeliveryToJson(this);

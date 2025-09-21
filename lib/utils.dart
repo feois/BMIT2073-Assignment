@@ -31,3 +31,5 @@ String? validateInt(
 
   return validator(i) ? null : invalidated;
 }
+
+bool matchString(String str, String query) => str.toLowerCase().contains(query.toLowerCase());

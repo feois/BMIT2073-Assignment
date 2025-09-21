@@ -13,15 +13,28 @@ class ViewSchedule extends StatefulWidget {
 }
 
 enum _SortBy {
-  name,
+  part,
+  destination,
   date,
+  status,
   priority,
+  ;
+
+  @override
+  String toString() => switch (this) {
+    part => 'Part',
+    date => 'Date',
+    destination => 'Destination',
+    status => 'Status',
+    priority => 'Priority',
+  };
 }
 
 class _ViewScheduleState extends State<ViewSchedule> {
   final _search = TextEditingController();
-  _SortBy _sort = _SortBy.name;
+  _SortBy _sort = _SortBy.part;
   bool _sortAscending = true;
+  bool _hideDelivered = false;
   bool _loading = true;
   List<Delivery> _deliveries = [];
 
@@ -49,13 +62,41 @@ class _ViewScheduleState extends State<ViewSchedule> {
             width: 64,
             height: 64,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('${delivery.part.name} (×${delivery.quantity})'),
-              Text(delivery.part.description),
-              Text('→ ${delivery.destination} by ${dateFormat.format(delivery.requiredDate)}'),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('${delivery.part.name} (×${delivery.quantity})'),
+                    Text('${delivery.priority}'),
+                  ],
+                ),
+                Text(delivery.part.description),
+                Row(
+                  spacing: 4,
+                  children: [
+                    Icon(Icons.arrow_forward, size: 16),
+                    Text('${delivery.destination} by ${dateFormat.format(delivery.requiredDate)}'),
+                  ],
+                ),
+                Row(
+                  spacing: 4,
+                  children: [
+                    Icon(
+                      switch (delivery.status) {
+                        DeliveryStatus.pickedUp => Icons.inventory,
+                        DeliveryStatus.enRoute => Icons.local_shipping,
+                        DeliveryStatus.delivered => Icons.check,
+                      },
+                      size: 16,
+                    ),
+                    Text(delivery.fullStatus),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -63,29 +104,38 @@ class _ViewScheduleState extends State<ViewSchedule> {
   );
 
   Widget _deliveryListView() {
+    final query = _search.text;
+    final deliveries = List<Delivery>.from(_deliveries.where(
+      (delivery) => (!_hideDelivered || delivery.status != DeliveryStatus.delivered)
+          && (query.isEmpty
+          || matchString(delivery.part.name, query)
+          || matchString(delivery.destination, query))
+    ));
+
     // ignore: prefer_function_declarations_over_variables
     Comparator<Delivery> comparator = (a, b) => switch (_sort) {
-      _SortBy.name => a.part.name.compareTo(b.part.name),
-      _SortBy.date => a.quantity.compareTo(b.quantity),
+      _SortBy.part => a.part.name.compareTo(b.part.name),
+      _SortBy.destination => a.destination.compareTo(b.destination),
+      _SortBy.date => a.requiredDate.compareTo(b.requiredDate),
+      _SortBy.status => a.status.index.compareTo(b.status.index),
       _SortBy.priority => a.priority.index.compareTo(b.priority.index),
     };
 
-    _deliveries.sort(_sortAscending ? comparator : (b, a) => comparator(a, b));
+    deliveries.sort(_sortAscending ? comparator : (b, a) => comparator(a, b));
 
     return Expanded(child: RefreshIndicator(
       onRefresh: _fetchDeliveries,
       child: ListView.separated(
-        padding: EdgeInsets.all(32),
         physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         scrollDirection: Axis.vertical,
-        itemBuilder: (_, i) => _deliveryView(_deliveries[i]),
+        itemBuilder: (_, i) => _deliveryView(deliveries[i]),
         separatorBuilder: (_, _) => const Divider(),
-        itemCount: _deliveries.length,
+        itemCount: deliveries.length,
       ),
     ));
   }
 
-  Widget _sortOption(_SortBy sort, String text) => ElevatedButton(
+  Widget _sortOption(_SortBy sort) => ElevatedButton(
     onPressed: () => setState(() {
       if (_sort == sort) { _sortAscending = !_sortAscending; }
       else { _sort = sort; }
@@ -96,7 +146,7 @@ class _ViewScheduleState extends State<ViewSchedule> {
       backgroundColor: _sort == sort ? Colors.grey[400] : Colors.transparent,
       shadowColor: Colors.transparent,
     ),
-    child: Text(text),
+    child: Text(sort.toString()),
   );
 
   @override
@@ -110,7 +160,7 @@ class _ViewScheduleState extends State<ViewSchedule> {
     appBar: AppBar(
       title: TextField(
         decoration: const InputDecoration(
-          hintText: "Search part",
+          hintText: "Search part name or destination",
           prefixIcon: Icon(Icons.search),
           prefixIconConstraints: BoxConstraints(
             minWidth: 32,
@@ -123,17 +173,32 @@ class _ViewScheduleState extends State<ViewSchedule> {
       ),
     ),
     body: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
       child: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            spacing: 16,
             children: [
               const Text("Sort by:"),
-              _sortOption(_SortBy.name, "Name"),
-              _sortOption(_SortBy.date, "Date"),
-              _sortOption(_SortBy.priority, "Priority"),
+              Expanded(
+                child: IntrinsicHeight(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      spacing: 8,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: _SortBy.values.map(_sortOption).toList()
+                    ),
+                  ),
+                ),
+              ),
             ],
+          ),
+          CheckboxListTile(
+            value: _hideDelivered,
+            onChanged: (hide) => setState(() => _hideDelivered = hide!),
+            title: const Text('Hide delivered'),
+            controlAffinity: ListTileControlAffinity.leading,
           ),
           _loading ? const Expanded(child: Center(child: CircularProgressIndicator())) : _deliveryListView(),
         ],
