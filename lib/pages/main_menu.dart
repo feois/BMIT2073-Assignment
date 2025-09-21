@@ -15,6 +15,10 @@ class MainMenu extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         spacing: 32,
         children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 96),
+            child: Image.asset('assets/logo.jpeg'),
+          ),
           Text(
             'Sure\nOn Time!',
             style: Theme.of(context).textTheme.displayLarge,
