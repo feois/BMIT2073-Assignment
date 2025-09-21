@@ -43,6 +43,7 @@ const _$DeliveryPriorityEnumMap = {
 };
 
 const _$DeliveryStatusEnumMap = {
+  DeliveryStatus.pending: 'Pending',
   DeliveryStatus.pickedUp: 'Picked Up',
   DeliveryStatus.enRoute: 'En Route',
   DeliveryStatus.delivered: 'Delivered',
