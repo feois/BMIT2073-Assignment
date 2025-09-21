@@ -76,13 +76,14 @@ class _ViewDeliveryState extends State<ViewDelivery> {
               spacing: 32,
               children: [
                 Image.network(
-                  'https://sxnngstlymxxxlfyimno.supabase.co/storage/v1/object/public/images/cube.png',
+                  delivery.part.image,
                   width: 128,
                   height: 128,
                 ),
                 Text(delivery.part.name, style: Theme.of(context).textTheme.titleLarge),
               ],
             ),
+            const SizedBox(height: 16),
             Text(delivery.part.description),
             Text('Quantity: ${delivery.quantity}'),
             Text('Destination: ${delivery.destination}'),

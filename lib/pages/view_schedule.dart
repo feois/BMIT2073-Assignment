@@ -69,16 +69,17 @@ class _ViewScheduleState extends State<ViewSchedule> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('${delivery.part.name} (×${delivery.quantity})'),
+                    Expanded(child: Text('${delivery.part.name} (×${delivery.quantity})')),
                     Text('${delivery.priority}'),
                   ],
                 ),
+                const Divider(),
                 Text(delivery.part.description),
                 Row(
                   spacing: 4,
                   children: [
                     Icon(Icons.arrow_forward, size: 16),
-                    Text('${delivery.destination} by ${dateFormat.format(delivery.requiredDate)}'),
+                    Expanded(child: Text('${delivery.destination} by ${dateFormat.format(delivery.requiredDate)}')),
                   ],
                 ),
                 Row(
@@ -92,7 +93,7 @@ class _ViewScheduleState extends State<ViewSchedule> {
                       },
                       size: 16,
                     ),
-                    Text(delivery.fullStatus),
+                    Expanded(child: Text(delivery.fullStatus)),
                   ],
                 ),
               ],

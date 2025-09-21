@@ -95,7 +95,7 @@ class _AddDeliveryState extends State<AddDelivery> {
                   onSaved: (part) => _part = int.parse(part!),
                   validator: (part) => validateInt(
                     part!,
-                        (part) => Database.partsMap.containsKey(part),
+                    (part) => Database.partsMap.containsKey(part),
                     empty: 'Part ID required!',
                     nan: 'Only integers allowed!',
                     invalidated: 'Part ID not found!',
